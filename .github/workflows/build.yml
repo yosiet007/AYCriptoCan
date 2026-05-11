@@ -1,0 +1,37 @@
+name: Build PascalCoin
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Free Pascal
+      uses: insidegui/setup-fpc@main
+      with:
+        version: 3.2.2
+    
+    - name: Compile Daemon
+      run: |
+        cd src
+        fpc -O2 -Tlinux -Px86_64 pascalcoin_daemon.pp
+    
+    - name: Compile Wallet Classic
+      run: |
+        cd src
+        fpc -O2 -Tlinux -Px86_64 pascalcoin_wallet_classic.lpr
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pascalcoin-binaries
+        path: |
+          src/pascalcoin_daemon
+          src/pascalcoin_wallet_classic

@@ -35,26 +35,26 @@ type
 Const
   CT_Genesis_Magic_String_For_Old_Block_Hash :
     String =
-    '(c) Albert Molina - Genesis block at same time than BitCoin Block 424720 Hash 000000000000000001cc41ff7846264718ef0a15f97f532a98277bd5f6820b89';
+    '(c) Yocie AYCriptoCan - AYCC Genesis Block 2026 Hash 000000000000000001AYCCryptoCanAYCCryptoCanAYCCryptoCanAYCCrypto';
 
   CT_Zero_Block_Proof_of_work_in_Hexa =
     {$IFDEF PRODUCTION}'00000003A29C32E84A539ADE24397D41D30116A6FAFEC17B7D9CED68A4238C92'{$ELSE}{$IFDEF TESTNET}''{$ELSE}{$ENDIF}{$ENDIF};
 
 
-  CT_NetServer_Port = {$IFDEF PRODUCTION}4004{$ELSE}{$IFDEF TESTNET}4204{$ELSE}{$ENDIF}{$ENDIF};
-  CT_JSONRPCMinerServer_Port = {$IFDEF PRODUCTION}4009{$ELSE}{$IFDEF TESTNET}4209{$ELSE}{$ENDIF}{$ENDIF};
-  CT_JSONRPC_Port = {$IFDEF PRODUCTION}4003{$ELSE}{$IFDEF TESTNET}4203{$ELSE}{$ENDIF}{$ENDIF};
+  CT_NetServer_Port = {$IFDEF PRODUCTION}15555{$ELSE}{$IFDEF TESTNET}15556{$ELSE}{$ENDIF}{$ENDIF};
+  CT_JSONRPCMinerServer_Port = {$IFDEF PRODUCTION}15559{$ELSE}{$IFDEF TESTNET}15560{$ELSE}{$ENDIF}{$ENDIF};
+  CT_JSONRPC_Port = {$IFDEF PRODUCTION}15553{$ELSE}{$IFDEF TESTNET}15554{$ELSE}{$ENDIF}{$ENDIF};
   CT_AccountsPerBlock = 5;
 
-  CT_NewLineSecondsAvg: Cardinal = {$IFDEF PRODUCTION}300{$ELSE}{$IFDEF TESTNET}30{$ELSE}{$ENDIF}{$ENDIF};
-    // 60*5=300 seconds -> 5 minutes avg
+  CT_NewLineSecondsAvg: Cardinal = {$IFDEF PRODUCTION}60{$ELSE}{$IFDEF TESTNET}30{$ELSE}{$ENDIF}{$ENDIF};
+    // 60*1=60 seconds -> 1 minute avg
     //   -> 1 day = 86400 seconds -> 1 year = 31536000 seconds (aprox)
-    //   Each year = 105120 new blocks (aprox)
-    //   -> *5 accounts per block = 525600 new accounts each year (aprox)
+    //   Each year = 525600 new blocks (aprox)
+    //   -> *5 accounts per block = 2628000 new accounts each year (aprox)
 
-  CT_FirstReward: UInt64 = 1000000; // 4 decimals... First reward = 100,0000
-  CT_MinReward: UInt64 = 10000; // 4 decimals... Min reward = 1,0000
-  CT_NewLineRewardDecrease: Cardinal = {$IFDEF PRODUCTION}210240{$ELSE}{$IFDEF TESTNET}10000{$ENDIF}{$ENDIF};
+  CT_FirstReward: UInt64 = 1500000000; // 4 decimals... First reward = 150000,0000
+  CT_MinReward: UInt64 = 50; // 4 decimals... Min reward = 0,0050
+  CT_NewLineRewardDecrease: Cardinal = {$IFDEF PRODUCTION}2400{$ELSE}{$IFDEF TESTNET}10000{$ENDIF}{$ENDIF};
 
   CT_WaitNewBlocksBeforeTransaction = {$IFDEF PRODUCTION}100{$ELSE}{$IFDEF TESTNET}10{$ENDIF}{$ENDIF};
 
@@ -97,7 +97,10 @@ Const
 
   CT_MaxClientsConnected = {$IFDEF FPC}140{$ELSE}80{$ENDIF};
 
-  CT_BankToDiskEveryNBlocks = {$IFDEF PRODUCTION}100{$ELSE}100{$ENDIF}; // Build 1.5 changed from 500 to 100;
+  CT_BankToDiskEveryNBlocks = {$IFDEF PRODUCTION}100{$ELSE}100{$ENDIF};
+
+  CT_SafeBox_CheckPoint_Distance = 2000;
+  CT_Max_Block_History = 2050; // Build 1.5 changed from 500 to 100;
 
   CT_NID_secp256k1 = 714;
   CT_NID_secp384r1 = 715;
@@ -130,7 +133,7 @@ Const
   CT_Protocol_Upgrade_v6_MinBlock = {$IFDEF PRODUCTION}999999999{$ELSE}999999999{$ENDIF}; // TODO: ALLOW V6 activate setting a valid "min block" value
 
 
-  CT_MagicNetIdentification = {$IFDEF PRODUCTION}$0A043580{$ELSE}$05000005{$ENDIF};
+  CT_MagicNetIdentification = {$IFDEF PRODUCTION}$3C8B0555{$ELSE}$3C8B0556{$ENDIF};
 
   CT_NetProtocol_Version: Word = 14;
   // IMPORTANT NOTE!!!
@@ -142,9 +145,9 @@ Const
 
   CT_SafeBoxBankVersion : Word = 3; // Protocol 2 upgraded safebox version from 2 to 3
 
-  CT_MagicIdentificator: String = {$IFDEF PRODUCTION}'PascalCoin'{$ELSE}'PascalCoin_TESTNET'{$ENDIF}; //
+  CT_MagicIdentificator: String = {$IFDEF PRODUCTION}'AYREPCRI'{$ELSE}'AYREPCRI_TESTNET'{$ENDIF}; //
 
-  CT_PascalCoin_Data_Folder : String = {$IFDEF PRODUCTION}'PascalCoin'{$ELSE}'PascalCoin_TESTNET'{$ENDIF}; //
+  CT_PascalCoin_Data_Folder : String = {$IFDEF PRODUCTION}'AYREPCRIPCAN'{$ELSE}'AYREPCRIPCAN_TESTNET'{$ENDIF}; //
 
   CT_PseudoOp_Reward = $0;
   // Value of Operations type in Protocol 1

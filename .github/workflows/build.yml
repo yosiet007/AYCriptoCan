@@ -1,4 +1,4 @@
-name: Build PascalCoin
+name: Build AYCriptoCan
 
 on:
   push:
@@ -8,30 +8,20 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
-    
+    runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Setup Free Pascal
-      uses: insidegui/setup-fpc@main
-      with:
-        version: 3.2.2
-    
-    - name: Compile Daemon
+
+    - name: Install Free Pascal
       run: |
-        cd src
-        fpc -O2 -Tlinux -Px86_64 pascalcoin_daemon.pp
-    
-    - name: Compile Wallet Classic
-      run: |
-        cd src
-        fpc -O2 -Tlinux -Px86_64 pascalcoin_wallet_classic.lpr
-    
-    - name: Upload artifacts
+        wget https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar
+        tar -xf fpc.tar
+        export PATH="$PATH:/home/runner/fpc/bin"
+        fpc -PB -Px86_64 -Tlinux src/pascalcoin_daemon.pp
+
+    - name: Upload daemon
       uses: actions/upload-artifact@v4
       with:
-        name: pascalcoin-binaries
-        path: |
-          src/pascalcoin_daemon
-          src/pascalcoin_wallet_classic
+        name: pascalcoin-daemon
+        path: pascalcoin_daemon

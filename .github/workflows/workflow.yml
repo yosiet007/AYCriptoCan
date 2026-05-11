@@ -43,6 +43,15 @@ jobs:
       if: matrix.operating-system == 'macos-latest'
       run: lazbuild -B --ws=cocoa "src/pascalcoin_wallet_classic.lpi"
 
+    - name: Prepare Windows Artifacts
+      if: matrix.operating-system == 'windows-latest'
+      run: |
+        mkdir -p windows_artifacts
+        copy src\pascalcoin_daemon.exe windows_artifacts\
+        copy src\PascalCoinMiner.exe windows_artifacts\
+        copy src\PascalCoinWalletLazarus.exe windows_artifacts\
+        copy windows-dll\*.dll windows_artifacts\
+
     - name: Upload Ubuntu binary
       if: matrix.operating-system == 'ubuntu-latest'
       uses: actions/upload-artifact@v5
@@ -58,10 +67,7 @@ jobs:
       uses: actions/upload-artifact@v5
       with:
         name: AYCriptoCan-Windows
-        path: |
-          src/pascalcoin_daemon.exe
-          src/PascalCoinMiner.exe
-          src/PascalCoinWalletLazarus.exe
+        path: windows_artifacts\
 
     - name: Upload macOS binary
       if: matrix.operating-system == 'macos-latest'

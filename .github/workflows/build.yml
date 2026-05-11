@@ -3,11 +3,6 @@ name: Build AYCriptoCan
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -16,19 +11,25 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
-    - name: Download Free Pascal
+    - name: Install FPC
       run: |
-        wget https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar
-        tar -xf fpc.tar
-        ls -la fpc/
+        sudo apt-get update
+        sudo apt-get install -y fpc
+        which fpc
+        fpc -v
 
-    - name: Compile Daemon
+    - name: List src files
+      run: |
+        ls -la src/
+
+    - name: Compile
       run: |
         cd src
-        fpc/bin/fpc -O2 pascalcoin_daemon.pp
-        ls -la pascalcoin_daemon || echo "Checking..."
+        fpc -O2 pascalcoin_daemon.pp 2>&1
+        echo "Exit: $?"
 
-    - name: Upload artifact
+    - name: Upload
+      if: success()
       uses: actions/upload-artifact@v5
       with:
         name: aycritocan-daemon

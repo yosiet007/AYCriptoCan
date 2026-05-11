@@ -15,16 +15,29 @@ jobs:
 
     - name: Download Free Pascal
       run: |
-        wget -q https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar
-        tar -xf fpc.tar
+        wget https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar 2>&1
+        tar -xf fpc.tar 2>&1
+        ls -la fpc*
+
+    - name: Check FPC
+      run: |
+        ls -la fpc/bin/fpc 2>&1 || echo "FPC not found"
+        fpc/bin/fpc -v 2>&1 || echo "FPC failed"
 
     - name: Compile Daemon
       run: |
         cd src
-        ./fpc/bin/fpc -O2 pascalcoin_daemon.pp
+        fpc/bin/fpc -O2 pascalcoin_daemon.pp 2>&1
+
+    - name: Check output
+      run: |
+        ls -la pascalcoin_daemon 2>&1 || echo "No binary"
 
     - name: Upload artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: aycritocan-daemon
-        path: src/pascalcoin_daemon
+        name: aycritocan-artifacts
+        path: |
+          src/pascalcoin_daemon
+          src/*.pp

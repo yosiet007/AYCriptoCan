@@ -11,18 +11,17 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Download Free Pascal
       run: |
         wget -q https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar
         tar -xf fpc.tar
-        ls -la fpc*
 
     - name: Compile Daemon
       run: |
         cd src
-        ./fpc/bin/fpc -O2 pascalcoin_daemon.pp || echo "Build result: $?"
+        ./fpc/bin/fpc -O2 pascalcoin_daemon.pp
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4

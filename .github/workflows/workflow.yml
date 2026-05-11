@@ -1,13 +1,13 @@
-name: build
+name: Build AYCriptoCan
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     tags: [ "*" ]
     paths-ignore: [ "README.md", "CHANGELOG.md", "release-notes.md" ]
 
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -16,15 +16,12 @@ jobs:
 
     strategy:
       matrix:
-        operating-system: [windows-latest,ubuntu-latest,macos-latest]
-#        lazarus-versions: [stable, 2.2.2, 2.2.0, 2.0.12]
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
         lazarus-versions: [stable]
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
-      with:
-        submodules: false
+      uses: actions/checkout@v5
 
     - name: Install Lazarus
       uses: gcarreno/setup-lazarus@v3
@@ -32,96 +29,46 @@ jobs:
         with-cache: false
         lazarus-version: ${{ matrix.lazarus-versions }}
 
-    - name: Build the Pascal daemon
+    - name: Build Daemon
       run: lazbuild -B "src/pascalcoin_daemon.lpi"
 
-    - name: Build reference Pascal Miner
+    - name: Build Miner
       run: lazbuild -B "src/pascalcoin_miner.lpi"
 
-    - name: Build the Main Wallet Application (Windows/Linux)
-      if: ${{ matrix.operating-system != 'macos-latest' }}
+    - name: Build Wallet
+      if: matrix.operating-system != 'macos-latest'
       run: lazbuild -B "src/pascalcoin_wallet_classic.lpi"
 
-    - name: Build the Main Wallet Application (macOS)
-      if: ${{ matrix.operating-system == 'macos-latest' }}
+    - name: Build Wallet macOS
+      if: matrix.operating-system == 'macos-latest'
       run: lazbuild -B --ws=cocoa "src/pascalcoin_wallet_classic.lpi"
 
-    - name: Upload binary (Windows)
-      if: ${{ (matrix.operating-system == 'windows-latest')  &&  (matrix.lazarus-versions == 'stable') }}
-      uses: actions/upload-artifact@v3
+    - name: Upload Ubuntu binary
+      if: matrix.operating-system == 'ubuntu-latest'
+      uses: actions/upload-artifact@v5
       with:
-        name: PascalCoinWindows
+        name: AYCriptoCan-Linux
+        path: |
+          src/pascalcoin_daemon
+          src/PascalCoinMiner
+          src/PascalCoinWalletLazarus
+
+    - name: Upload Windows binary
+      if: matrix.operating-system == 'windows-latest'
+      uses: actions/upload-artifact@v5
+      with:
+        name: AYCriptoCan-Windows
         path: |
           src/pascalcoin_daemon.exe
           src/PascalCoinMiner.exe
           src/PascalCoinWalletLazarus.exe
 
-    - name: Upload binary (Ubuntu)
-      if: ${{ (matrix.operating-system == 'ubuntu-latest')  &&  (matrix.lazarus-versions == 'stable') }}
-      uses: actions/upload-artifact@v3
+    - name: Upload macOS binary
+      if: matrix.operating-system == 'macos-latest'
+      uses: actions/upload-artifact@v5
       with:
-        name: PascalCoinLinux
+        name: AYCriptoCan-macOS
         path: |
           src/pascalcoin_daemon
           src/PascalCoinMiner
           src/PascalCoinWalletLazarus
-
-    - name: Upload binary (macOS)
-      if: ${{ (matrix.operating-system == 'macos-latest')  &&  (matrix.lazarus-versions == 'stable') }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: PascalCoinMacOS
-        path: |
-          src/pascalcoin_daemon
-          src/PascalCoinMiner
-          src/PascalCoinWalletLazarus
-
-  package-release:
-    if: contains(github.ref, '/tags/')
-
-    name: Package and create GitHub Release
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Set output
-      id: vars
-      run: echo "tag=${GITHUB_REF#refs/*/}" >> ${GITHUB_OUTPUT}
-
-    - name: Download the Release binary
-      uses: actions/download-artifact@v3
-
-    - name: List files
-      run: |
-        ls -alF PascalCoinWindows
-        ls -alF PascalCoinLinux
-        ls -alF PascalCoinMacOS
-
-    - name: Create release files
-      run: |
-        cd PascalCoinWindows
-        cp ../windows-dll/*.dll .
-        zip -r PascalCoin-${{ steps.vars.outputs.tag }}-x86_64-win64.zip *.exe *.dll
-        cd ../PascalCoinLinux
-        cp ../linux-libs/*.so.1.1 .
-        chmod +x PascalCoin* pascalcoin*
-        tar -zcvf PascalCoin-${{ steps.vars.outputs.tag }}-x86_64-linux.tar.gz PascalCoin* pascalcoin* *.so.1.1
-        cd ../PascalCoinMacOS
-        chmod +x PascalCoin* pascalcoin*
-        tar -zcvf PascalCoin-${{ steps.vars.outputs.tag }}-x86_64-darwin.tar.gz PascalCoin* pascalcoin*
-
-    - name: Create GitHub release
-      uses: softprops/action-gh-release@v1
-      with:
-        name: PascalCoin ${{ steps.vars.outputs.tag }}
-        body_path: release-notes.md
-        files: |
-          PascalCoinWindows/*.zip
-          PascalCoinLinux/*.tar.gz
-          PascalCoinMacOS/*.tar.gz
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

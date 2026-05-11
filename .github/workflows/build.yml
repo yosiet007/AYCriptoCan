@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -15,29 +18,18 @@ jobs:
 
     - name: Download Free Pascal
       run: |
-        wget https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar 2>&1
-        tar -xf fpc.tar 2>&1
-        ls -la fpc*
-
-    - name: Check FPC
-      run: |
-        ls -la fpc/bin/fpc 2>&1 || echo "FPC not found"
-        fpc/bin/fpc -v 2>&1 || echo "FPC failed"
+        wget https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar
+        tar -xf fpc.tar
+        ls -la fpc/
 
     - name: Compile Daemon
       run: |
         cd src
-        fpc/bin/fpc -O2 pascalcoin_daemon.pp 2>&1
-
-    - name: Check output
-      run: |
-        ls -la pascalcoin_daemon 2>&1 || echo "No binary"
+        fpc/bin/fpc -O2 pascalcoin_daemon.pp
+        ls -la pascalcoin_daemon || echo "Checking..."
 
     - name: Upload artifact
-      if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
-        name: aycritocan-artifacts
-        path: |
-          src/pascalcoin_daemon
-          src/*.pp
+        name: aycritocan-daemon
+        path: src/pascalcoin_daemon

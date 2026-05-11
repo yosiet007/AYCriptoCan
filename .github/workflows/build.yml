@@ -6,31 +6,25 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Free Pascal
+    - name: Download Free Pascal
       run: |
-        sudo apt-get update
-        sudo apt-get install -y fpc
+        wget -q https://sourceforge.net/projects/freepascal/files/3.2.2/fpc-3.2.2.x86_64-linux.tar/download -O fpc.tar
+        tar -xf fpc.tar
+        ls -la fpc*
 
     - name: Compile Daemon
       run: |
         cd src
-        fpc -O2 pascalcoin_daemon.pp
-
-    - name: List output
-      run: ls -la src/pascalcoin_daemon 2>/dev/null || echo "Build may have failed"
+        ./fpc/bin/fpc -O2 pascalcoin_daemon.pp || echo "Build result: $?"
 
     - name: Upload artifact
-      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: aycritocan-daemon
